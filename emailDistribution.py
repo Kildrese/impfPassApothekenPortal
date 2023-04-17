@@ -4,9 +4,9 @@ from email.message import EmailMessage
 import unidecode
 import os
 
-subject = "MAIL_SUBJECT"
-sender_email = "SENDING_EMAIL"
-password = "PASSWORD"
+subject = os.getenv("SUBJECT_FOR_PATIENT_EMAIL")
+sender_email = os.getenv("SENDER_EMAIL")
+password = os.getenv("SENDER_PASSWORD")
 
 fileDirectory = os.getenv("DOWNLOAD_DIRECTORY")
 
@@ -45,7 +45,7 @@ def send_mail(main_body, file, receiver, beide):
 
     # Log in to server using secure context and send email
     context = ssl.create_default_context()
-    with smtplib.SMTP_SSL("INSERT SMTP SERVER", 465, context=context) as server:
+    with smtplib.SMTP_SSL(os.getenv("SENDER_SMTP"), 465, context=context) as server:
         server.login(user=sender_email, password=password)
         server.send_message(message)
         print(file + " gesendet an: " + receiver_email)

@@ -14,7 +14,7 @@ from selenium import webdriver
 import emailDistribution as distribution
 
 # setting the URL for BeautifulSoup to operate in
-url = "URL-TO-APOTHEKEN-PORTAL"
+url = os.getenv("APOTHEKENPORTAL_URL")
 
 erstellte_passe = 0
 sent_mails = 0
@@ -29,20 +29,23 @@ def setup_driver():
              }
     options.add_experimental_option("prefs", prefs)
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
-    driver = webdriver.Chrome(executable_path=r'C:\Users\phili\Documents\impfpassKram\passGenerator\chromedriver.exe',
+    driver = webdriver.Chrome(executable_path=os.getenv("CHROMEDRIVER_PATH"),
                               options=options)
     driver.maximize_window()
     driver.get(url)
 
-    driver.find_element(By.NAME, 'email').send_keys("APOTHEKENPORTAL-EMAIL")
+    username = os.getenv("APOTHEKENPORTAL_USERNAME")
+    password = os.getenv("APOTHEKENPORTAL_PASSWORD")
+
+    driver.find_element(By.NAME, 'email').send_keys(username)
     input_password = driver.find_element(By.NAME, 'password')
-    input_password.send_keys("APOTHEKENPORTAL-PASSWORD")
+    input_password.send_keys(password)
     input_password.submit()
     time.sleep(2)
 
-    driver.find_element(By.NAME, 'email').send_keys("kiliandresse@aol.com")
+    driver.find_element(By.NAME, 'email').send_keys(username)
     input_password = driver.find_element(By.NAME, 'password')
-    input_password.send_keys("syqqes-qasnos-gyWpu0")
+    input_password.send_keys(password)
     input_password.submit()
     time.sleep(2)
 
@@ -303,12 +306,14 @@ def try_sending_mail(gender, first, last, mail, beide):
 
 # this function sends a mail to the admin if the process was successful
 def send_succes_mail():
-    sender_email = "SENDER_MAIL"
-    password = "PASSWORD"
+    sender_email = os.getenv("SENDER_EMAIL")
+    password = os.getenv("SENDER_PASSWORD")
+    admin_mail = os.getenv("ADMIN_MAIL")
+
     context = ssl.create_default_context()
     message = MIMEMultipart()
     message['From'] = sender_email
-    message['To'] = "ADMIN_MAIL"
+    message['To'] = admin_mail
     message['Subject'] = "Datensatz wurde erfolgreich verschickt"
 
     mail_string = ""
@@ -323,9 +328,9 @@ def send_succes_mail():
 
     text = message.as_string()
 
-    with smtplib.SMTP_SSL("SMTP_SERVER", 465, context=context) as server:
+    with smtplib.SMTP_SSL(os.getenv("SENDER_SMTP"), 465, context=context) as server:
         server.login(user=sender_email, password=password)
-        server.sendmail(sender_email, "ADMIN_MAIL", text)
+        server.sendmail(sender_email, admin_mail, text)
 
 
 # fulfill_form('Max', 'Mustermann', '19.08.84', 'Comirnaty', '10.06.21', '1')

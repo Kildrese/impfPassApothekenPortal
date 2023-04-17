@@ -3,9 +3,9 @@ import csv
 import email
 import imaplib
 
-sender_email = "SENDING_EMAIL"
-password = "PASSWORD"
-server = "IMAP_SERVER"
+sender_email = os.getenv("SENDER_EMAIL")
+password = os.getenv("SENDER_PASSWORD")
+server = os.getenv("SENDER_IMAP")
 
 mail = imaplib.IMAP4_SSL(server)
 mail.login(sender_email, password)
